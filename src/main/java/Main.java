@@ -31,13 +31,13 @@ public class Main {
             List<ValDiff> valDiffs = new ArrayList<>();
             System.out.printf("%-50s %-15s %-15s %s\n", "NAME", "CURRENT", "PREVIOUS", "DIFFERENCE");
             for (int i = 0; i < valuePrev.size() && i < valueNow.size(); i++) {
-                //convert string to float
+                //Из запроса значение валюты приходит с ',' , поэтому происходит замена на '.' для конвертации в float
                 float valPrev = Float.parseFloat(valuePrev.get(i).replace(",", "."));
                 float valNow = Float.parseFloat(valueNow.get(i).replace(",", "."));
                 if (nameNow.get(i).equals(namePrev.get(i))) {
                     ValDiff diff = new ValDiff(nameNow.get(i), valNow - valPrev);
                     valDiffs.add(diff);
-                    System.out.printf("%-50s %-15s %-15s %s\n", nameNow.get(i), valNow, valPrev, valNow - valPrev);
+                    System.out.printf("%-50s %-15s %-15s %s\n", nameNow.get(i), valNow, valPrev, diff.value);
                 }
             }
 
