@@ -12,13 +12,13 @@ public class Main {
         try {
             String url = "http://www.cbr.ru/scripts/XML_daily.asp";
 
-            //previous course
             Calendar calendar = Calendar.getInstance();
             calendar.add(Calendar.DAY_OF_MONTH, -1);
             String dateFormat = new SimpleDateFormat("dd/MM/yyyy").format(calendar.getTime());
             System.out.println(url);
             System.out.println( url + "?date_req=" + dateFormat);
 
+            //previous course
             Document documentPrev = Jsoup.connect(url + "?date_req=" + dateFormat).get();
             List<String> namePrev = documentPrev.select("Name").eachText();
             List<String> valuePrev = documentPrev.select("Value").eachText();
@@ -77,43 +77,27 @@ public class Main {
 
     //Класс для хранения в списке валюты и ее изменения
     public static class ValDiff {
-        private String name;
-        private float value;
+        public String name;
+        public float value;
 
         public ValDiff(String name, float value) {
             this.name = name;
             this.value = value;
         }
 
-        public String getName() {
-            return name;
-        }
-
-        public void setName(String name) {
-            this.name = name;
-        }
-
-        public float getValue() {
-            return value;
-        }
-
-        public void setValue(float value) {
-            this.value = value;
-        }
-
         public boolean greatAbsThan(ValDiff valDiff) {
-            return Math.abs(this.value) > Math.abs(valDiff.getValue());
+            return Math.abs(this.value) > Math.abs(valDiff.value);
         }
 
         public void swap(ValDiff valDiff) {
             String tmpName = this.name;
             float tmpValue = this.value;
 
-            this.name = valDiff.getName();
-            this.value = valDiff.getValue();
+            this.name = valDiff.name;
+            this.value = valDiff.value;
 
-            valDiff.setName(tmpName);
-            valDiff.setValue(tmpValue);
+            valDiff.name = tmpName;
+            valDiff.value = tmpValue;
         }
 
         public void print() {
