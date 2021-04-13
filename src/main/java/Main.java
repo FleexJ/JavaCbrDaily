@@ -41,12 +41,7 @@ public class Main {
                 }
             }
 
-            sortList(valDiffs);
-//            System.out.printf("%-50s %-15s %s\n", "Name", "Current", "Previous");
-//            System.out.println("\nSORTED DIFFS:");
-//            for (ValDiff diff : valDiffs) {
-//                diff.print();
-//            }
+            Collections.sort(valDiffs);
 
             System.out.println("\n\nFIVE MOST CHANGED:");
             System.out.printf("%-50s%-15s\n", "NAME", "DIFFERENCE");
@@ -59,24 +54,8 @@ public class Main {
         }
     }
 
-    //Сортировка по модулю разницы
-    public static void sortList(List<ValDiff> list) {
-        boolean fl = true;
-        while (fl){
-            fl = false;
-            for (int i = 0; i < list.size() - 1; i++) {
-                ValDiff cur = list.get(i);
-                ValDiff next = list.get(i + 1);
-                if (next.greatAbsThan(cur)) {
-                    cur.swap(next);
-                    fl = true;
-                }
-            }
-        }
-    }
-
     //Класс для хранения в списке валюты и ее изменения
-    public static class ValDiff {
+    public static class ValDiff implements Comparable<ValDiff> {
         public String name;
         public float value;
 
@@ -85,23 +64,15 @@ public class Main {
             this.value = value;
         }
 
-        public boolean greatAbsThan(ValDiff valDiff) {
-            return Math.abs(this.value) > Math.abs(valDiff.value);
-        }
-
-        public void swap(ValDiff valDiff) {
-            String tmpName = this.name;
-            float tmpValue = this.value;
-
-            this.name = valDiff.name;
-            this.value = valDiff.value;
-
-            valDiff.name = tmpName;
-            valDiff.value = tmpValue;
-        }
-
         public void print() {
             System.out.printf("%-50s%s\n", name, value);
+        }
+
+        @Override
+        public int compareTo(ValDiff o) {
+            Float cur = Math.abs(value);
+            Float next = Math.abs(o.value);
+            return next.compareTo(cur);
         }
     }
 }
