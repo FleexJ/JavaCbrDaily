@@ -21,7 +21,7 @@ public class Main {
             System.out.printf("\n\n%-50s %-15s %-15s %s\n","NAME", "CURRENT", "PREVIOUS", "DIFFERENCE");
             response.valute.forEach(
                             (key, value) -> {
-                                System.out.printf("%-50s %-15s %-15s %s\n", (key + "\t" + value.name), value.value, value.previous, value.value - value.previous);
+                                value.print();
                                 valuteList.add(value);
                             });
 
@@ -30,8 +30,7 @@ public class Main {
             System.out.println("\n\nMOST CHANGED:");
             System.out.printf("%-50s %-15s %-15s %s\n","NAME", "CURRENT", "PREVIOUS", "DIFFERENCE");
             for (int i = 0; i < 5 && i < valuteList.size(); i++) {
-                Valute cur = valuteList.get(i);
-                System.out.printf("%-50s %-15s %-15s %s\n", (cur.charCode + "\t" + cur.name), cur.value, cur.previous, cur.value - cur.previous);
+                valuteList.get(i).print();
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -79,9 +78,18 @@ public class Main {
         @SerializedName("Previous")
         public float previous;
 
+        public void print() {
+            System.out.printf("%-50s %-15s %-15s %s\n", (charCode + "\t" + name), value, previous, getDiff());
+        }
+
+        public float getDiff() {
+            return value - previous;
+        }
+
+        @Override
         public int compareTo(Valute o) {
-            float curDiff = Math.abs(value - previous);
-            float nextDiff = Math.abs(o.value - o.previous);
+            float curDiff = Math.abs(getDiff());
+            float nextDiff = Math.abs(o.getDiff());
             return Float.compare(nextDiff, curDiff);
         }
     }
