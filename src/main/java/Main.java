@@ -17,14 +17,17 @@ public class Main {
             System.out.println("JSON response:\n" + json);
 
             Response response = new Gson().fromJson(json, Response.class);
+            //Список, где хранятся все валюты
             List<Valute> valuteList = new ArrayList<>();
             System.out.printf("\n\n%-50s %-15s %-15s %s\n","NAME", "CURRENT", "PREVIOUS", "DIFFERENCE");
+            //Вывод валют и формирование списка
             response.valute.forEach(
                             (key, value) -> {
                                 value.print();
                                 valuteList.add(value);
                             });
 
+            //Сортировка валют по убыванию их изменения
             Collections.sort(valuteList);
 
             System.out.println("\n\nMOST CHANGED:");
@@ -38,7 +41,7 @@ public class Main {
 
     }
 
-    //Класс для хранения в списке валюты и ее изменения
+    //Класс для хранения ответа сервера
     public static class Response {
         @SerializedName("Date")
         public Date date;
@@ -56,6 +59,7 @@ public class Main {
         public HashMap<String, Valute> valute;
     }
 
+    //Класс для хранения валюты
     public static class Valute implements Comparable<Valute>{
         @SerializedName("ID")
         public String id;
