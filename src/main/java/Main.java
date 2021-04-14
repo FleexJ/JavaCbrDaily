@@ -1,7 +1,6 @@
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
 
 import java.io.IOException;
 import java.util.*;
