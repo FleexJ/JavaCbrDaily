@@ -1,78 +1,87 @@
+import com.google.gson.Gson;
+import com.google.gson.annotations.SerializedName;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.jsoup.select.Elements;
 
 import java.io.IOException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class Main {
     public static void main(String[] args) {
+        String url = "https://www.cbr-xml-daily.ru/daily_json.js";
+
         try {
-            String url = "http://www.cbr.ru/scripts/XML_daily.asp";
+            String json = Jsoup.connect(url).ignoreContentType(true).execute().body();
 
-            Calendar calendar = Calendar.getInstance();
-            calendar.add(Calendar.DAY_OF_MONTH, -1);
-            String dateFormat = new SimpleDateFormat("dd/MM/yyyy").format(calendar.getTime());
-            System.out.println(url);
-            System.out.println( url + "?date_req=" + dateFormat);
+            System.out.println("JSON response:\n" + json);
 
-            //previous course
-            Document documentPrev = Jsoup.connect(url + "?date_req=" + dateFormat).get();
-            List<String> namePrev = documentPrev.select("Name").eachText();
-            List<String> valuePrev = documentPrev.select("Value").eachText();
+            Response response = new Gson().fromJson(json, Response.class);
+            List<Valute> valuteList = new ArrayList<>();
+            System.out.printf("\n\n%-50s %-15s %-15s %s\n","NAME", "CURRENT", "PREVIOUS", "DIFFERENCE");
+            response.valute.forEach(
+                            (key, value) -> {
+                                System.out.printf("%-50s %-15s %-15s %s\n", (key + "\t" + value.name), value.value, value.previous, value.value - value.previous);
+                                valuteList.add(value);
+                            });
 
-            //current course
-            Document documentNow = Jsoup.connect(url).get();
-            List<String> nameNow = documentNow.select("Name").eachText();
-            List<String> valueNow = documentNow.select("Value").eachText();
-            
-            List<ValDiff> valDiffs = new ArrayList<>();
-            System.out.printf("%-50s %-15s %-15s %s\n", "NAME", "CURRENT", "PREVIOUS", "DIFFERENCE");
-            for (int i = 0; i < valuePrev.size() && i < valueNow.size(); i++) {
-                //Из запроса значение валюты приходит с ',' , поэтому происходит замена на '.' для конвертации в float
-                float valPrev = Float.parseFloat(valuePrev.get(i).replace(",", "."));
-                float valNow = Float.parseFloat(valueNow.get(i).replace(",", "."));
-                if (nameNow.get(i).equals(namePrev.get(i))) {
-                    ValDiff diff = new ValDiff(nameNow.get(i), valNow - valPrev);
-                    valDiffs.add(diff);
-                    System.out.printf("%-50s %-15s %-15s %s\n", nameNow.get(i), valNow, valPrev, diff.value);
-                }
+            Collections.sort(valuteList);
+
+            System.out.println("\n\nMOST CHANGED:");
+            System.out.printf("%-50s %-15s %-15s %s\n","NAME", "CURRENT", "PREVIOUS", "DIFFERENCE");
+            for (int i = 0; i < 5 && i < valuteList.size(); i++) {
+                Valute cur = valuteList.get(i);
+                System.out.printf("%-50s %-15s %-15s %s\n", (cur.charCode + "\t" + cur.name), cur.value, cur.previous, cur.value - cur.previous);
             }
-
-            Collections.sort(valDiffs);
-
-            System.out.println("\n\nFIVE MOST CHANGED:");
-            System.out.printf("%-50s%-15s\n", "NAME", "DIFFERENCE");
-            for (int i = 0; i < 5; i++) {
-                valDiffs.get(i).print();
-            }
-
         } catch (IOException e) {
             e.printStackTrace();
         }
+
     }
 
     //Класс для хранения в списке валюты и ее изменения
-    public static class ValDiff implements Comparable<ValDiff> {
+    public static class Response {
+        @SerializedName("Date")
+        public Date date;
+
+        @SerializedName("PreviousDate")
+        public Date previousDate;
+
+        @SerializedName("PreviousURl")
+        public String previousUrl;
+
+        @SerializedName("Timestamp")
+        public Date timestamp;
+
+        @SerializedName("Valute")
+        public HashMap<String, Valute> valute;
+    }
+
+    public static class Valute implements Comparable<Valute>{
+        @SerializedName("ID")
+        public String id;
+
+        @SerializedName("NumCode")
+        public String numCode;
+
+        @SerializedName("CharCode")
+        public String charCode;
+
+        @SerializedName("Nominal")
+        public int nominal;
+
+        @SerializedName("Name")
         public String name;
+
+        @SerializedName("Value")
         public float value;
 
-        public ValDiff(String name, float value) {
-            this.name = name;
-            this.value = value;
-        }
+        @SerializedName("Previous")
+        public float previous;
 
-        public void print() {
-            System.out.printf("%-50s%s\n", name, value);
-        }
-
-        @Override
-        public int compareTo(ValDiff o) {
-            Float cur = Math.abs(value);
-            Float next = Math.abs(o.value);
-            return next.compareTo(cur);
+        public int compareTo(Valute o) {
+            float curDiff = Math.abs(value - previous);
+            float nextDiff = Math.abs(o.value - o.previous);
+            return Float.compare(nextDiff, curDiff);
         }
     }
 }
