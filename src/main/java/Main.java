@@ -13,6 +13,7 @@ public class Main {
         try {
             String json = Jsoup.connect(url).ignoreContentType(true).execute().body();
 
+            System.out.println("URL: " + url);
             System.out.println("JSON response:\n" + json);
 
             Response response = new Gson().fromJson(json, Response.class);
