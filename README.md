@@ -4,7 +4,7 @@
   
 На сайте https://www.cbr-xml-daily.ru ежедневно публикуют курсы валют. Напишите программу, которая выведет пять валют, курс которых изменился сильнее всего за прошедшие сутки.
 
-Использована зависимость для парсинга результата запроса:
+Зависимость для получения JSON от сервера:
 ```
 <dependency>
 <!-- jsoup HTML parser library @ https://jsoup.org/ -->
@@ -14,4 +14,14 @@
 </dependency>
 ```
 
-upd. Вместо https://www.cbr-xml-daily.ru использовался другой url: http://www.cbr.ru/scripts/XML_daily.asp , не получалось взять курс за определенную дату.
+Зависимость для парсинга строки JSON:
+```
+<!-- https://mvnrepository.com/artifact/com.google.code.gson/gson -->
+<dependency>
+    <groupId>com.google.code.gson</groupId>
+    <artifactId>gson</artifactId>
+    <version>2.8.6</version>
+</dependency>
+```
+
+
