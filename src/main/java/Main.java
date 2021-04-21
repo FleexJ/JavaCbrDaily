@@ -3,6 +3,7 @@ import com.google.gson.annotations.SerializedName;
 import org.jsoup.Jsoup;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.*;
 
 public class Main {
@@ -37,7 +38,6 @@ public class Main {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
     }
 
     //Класс для хранения ответа сервера
@@ -76,24 +76,24 @@ public class Main {
         public String name;
 
         @SerializedName("Value")
-        public float value;
+        public BigDecimal value;
 
         @SerializedName("Previous")
-        public float previous;
+        public BigDecimal previous;
 
         public void print() {
             System.out.printf("%-50s %-15s %-15s %s\n", (charCode + "\t" + name), value, previous, getDiff());
         }
 
-        public float getDiff() {
-            return value - previous;
+        public BigDecimal getDiff() {
+            return value.subtract(previous);
         }
 
         @Override
         public int compareTo(Valute o) {
-            float curDiff = Math.abs(getDiff());
-            float nextDiff = Math.abs(o.getDiff());
-            return Float.compare(nextDiff, curDiff);
+            BigDecimal curDiff = getDiff().abs();
+            BigDecimal nextDiff = o.getDiff().abs();
+            return nextDiff.compareTo(curDiff);
         }
     }
 }
